@@ -1,12 +1,10 @@
-import sys
-
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton
 
 
 class DraggableWindow(QWidget):
-    def __init__(self):
+    def __init__(self, main_app: QApplication):
         super().__init__()
 
         # Dodajemy tytuł i przyciski
@@ -71,7 +69,7 @@ class DraggableWindow(QWidget):
         """
         )
 
-        close_button.clicked.connect(app.quit)
+        close_button.clicked.connect(main_app.quit)
 
         # przyciski
         button_layout = QVBoxLayout()
