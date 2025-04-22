@@ -1,8 +1,13 @@
-"""
-Ten plik uruchamia się jako pierwszy.
-"""
+import sys
 
-# TODO okienko z guzikami w qt
+from PySide6.QtWidgets import QApplication
 
-if __name__ == '__main__':
-    pass
+from window import DraggableWindow
+
+if __name__ == "__main__":
+    # Uruchomienie aplikacji
+    app = QApplication(sys.argv)
+
+    window = DraggableWindow(main_app=app)
+    window.show()
+    sys.exit(app.exec())
