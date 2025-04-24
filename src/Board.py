@@ -54,7 +54,7 @@ class Board:
                 new_gen_cells[cell_pos] = Cell(State.ALIVE)
 
     def next_generation(self):
-        """Tworzy nową mapę sprawdza warunki i wpisuje żywe komórki do nowej tablicy"""
+        """Tworzy kolejną generację"""
         new_gen_cells: dict[tuple[int, int], Cell] = {}
         for pos, cell in self.board.items():
             self.check_neighbours(
