@@ -7,13 +7,14 @@ from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushB
 
 # TODO do upiększenia
 def load_custom_font():
-    font_path = os.path.join("assets", "fonts", "pixel.otf")  # Change this to your actual font file name
+    font_path = os.path.join("assets", "fonts", "pixel.otf")
     font_id = QFontDatabase.addApplicationFont(font_path)
     if font_id == -1:
         print("Failed to load font.")
         return None
     font_family = QFontDatabase.applicationFontFamilies(font_id)[0]
     return QFont(font_family)
+
 
 class DraggableWindow(QWidget):
     def __init__(self, main_app: QApplication):
@@ -28,12 +29,9 @@ class DraggableWindow(QWidget):
         # Ustawienie tytułu
         title_label = QLabel("Game of Life")
         title_label.setFont(self.pixel_font)
-        #title_label.setFont(QFont("Comic Sans MS", 20, QFont.Bold))
+        # title_label.setFont(QFont("Comic Sans MS", 20, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setStyleSheet("color: white; padding: 20px 0;")
-
-        # nieudaaje mi sie pobrac fontu pikselowego :(
-        # start
         start_button = QPushButton("Start")
         start_button.setFont(QFont("Comic Sans MS", 14))
         start_button.setStyleSheet(
