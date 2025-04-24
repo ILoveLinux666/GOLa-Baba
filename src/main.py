@@ -8,11 +8,12 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     board: Board = Board()
     board.initialize_board()
+    for pos, cell in board.get_board().items():
+        print(f"{pos} - {cell}")
+    print("="*40)
     board.next_generation()
-    for l in board.get_board():
-        for cell in l:
-            print(cell.state.value, end=" ")
-        print()
+    for pos, cell in board.get_board().items():
+        print(f"{pos} - {cell}")
     window = DraggableWindow(main_app=app)
     window.show()
     sys.exit(app.exec())
