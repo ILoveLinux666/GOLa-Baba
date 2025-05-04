@@ -3,6 +3,8 @@ import os
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtGui import QFont, QFontDatabase
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton
+from Board import Board
+from Game import GameOfLifeWindow
 
 
 # TODO do upiększenia
@@ -32,9 +34,9 @@ class DraggableWindow(QWidget):
         # title_label.setFont(QFont("Comic Sans MS", 20, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setStyleSheet("color: white; padding: 20px 0;")
-        start_button = QPushButton("Start")
-        start_button.setFont(QFont("Comic Sans MS", 14))
-        start_button.setStyleSheet(
+        self.start_button = QPushButton("Start")
+        self.start_button.setFont(QFont("Comic Sans MS", 14))
+        self.start_button.setStyleSheet(
             """
             QPushButton {
                 background-color: #00c853;
@@ -47,6 +49,7 @@ class DraggableWindow(QWidget):
             }
         """
         )
+        self.start_button.clicked.connect(self.start_game)
         # menu
         menu_button = QPushButton("Menu")
         menu_button.setFont(QFont("Comic Sans MS", 14))
@@ -85,7 +88,7 @@ class DraggableWindow(QWidget):
         # przyciski
         button_layout = QVBoxLayout()
         button_layout.setAlignment(Qt.AlignCenter)
-        button_layout.addWidget(start_button)
+        button_layout.addWidget(self.start_button)
         button_layout.addSpacing(20)
         button_layout.addWidget(menu_button)
         button_layout.addSpacing(20)
@@ -116,3 +119,10 @@ class DraggableWindow(QWidget):
 
     def mouseReleaseEvent(self, event):
         self.offset = QPoint()
+
+    def start_game(self):
+        board = Board()
+        board.initialize_board()
+        self.game_window = GameOfLifeWindow(board)
+        self.game_window.show()
+        self.game_window.start()
