@@ -51,7 +51,7 @@ class DraggableWindow(QWidget):
         )
         self.start_button.clicked.connect(self.start_game)
         # menu
-        menu_button = QPushButton("Menu")
+        menu_button = QPushButton("Options")
         menu_button.setFont(QFont("Comic Sans MS", 14))
         menu_button.setStyleSheet(
             """
