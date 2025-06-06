@@ -3,7 +3,15 @@ import random
 
 from PySide6.QtCore import Qt, QPoint
 from PySide6.QtGui import QFont, QFontDatabase, QPainter, QColor
-from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton
+from PySide6.QtWidgets import (
+    QApplication,
+    QWidget,
+    QLabel,
+    QVBoxLayout,
+    QPushButton,
+    QLineEdit,
+    QComboBox,
+)
 
 from Board import Board
 from Game import GameOfLifeWindow
@@ -31,11 +39,8 @@ class PixelBackground(QWidget):
         pattern = []
         width = self.width() // self.pixel_size
         height = self.height() // self.pixel_size
-
         for y in range(height):
-            row = []
-            for x in range(width):
-                row.append(1 if random.random() < 0.05 else 0)
+            row = [1 if random.random() < 0.05 else 0 for _ in range(width)]
             pattern.append(row)
         return pattern
 
@@ -53,10 +58,77 @@ class PixelBackground(QWidget):
                 )
 
 
+class OptionsWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Opcje")
+        self.setGeometry(400, 400, 300, 220)
+        self.setStyleSheet("background-color: #121212; color: white;")
+
+        font = load_custom_font(14)
+
+        layout = QVBoxLayout()
+
+        label = QLabel("Imię:")
+        label.setFont(font)
+        layout.addWidget(label)
+
+        self.name_input = QLineEdit()
+        self.name_input.setFont(font)
+        self.name_input.setStyleSheet(
+            "background-color: #333; color: white; padding: 5px;"
+        )
+        layout.addWidget(self.name_input)
+
+        size_label = QLabel("Wielkość planszy:")
+        size_label.setFont(font)
+        layout.addWidget(size_label)
+
+        self.size_combo = QComboBox()
+        self.size_combo.setFont(font)
+        self.size_combo.setStyleSheet(
+            "background-color: #333; color: white; padding: 5px;"
+        )
+        self.size_combo.addItems(["300x400", "100x200"])
+        layout.addWidget(self.size_combo)
+
+        save_button = QPushButton("Zapisz")
+        save_button.setFont(font)
+        save_button.setStyleSheet(
+            """
+            QPushButton {
+                background-color: #2196f3;
+                color: white;
+                padding: 8px 20px;
+                border-radius: 8px;
+            }
+            QPushButton:hover {
+                background-color: #42a5f5;
+            }
+        """
+        )
+        save_button.clicked.connect(self.save_config)
+        layout.addWidget(save_button)
+
+        self.setLayout(layout)
+
+    def save_config(self):
+        name = self.name_input.text().strip()
+        size = self.size_combo.currentText().strip()
+        if name:
+            try:
+                with open("player_config.txt", "w", encoding="utf-8") as f:
+                    f.write(f"name: {name}\n")
+                    f.write(f"size: {size}\n")
+                print(f"[✓] Zapisano: name={name}, size={size}")
+            except Exception as e:
+                print(f"[✗] Błąd zapisu: {e}")
+        self.close()
+
+
 class DraggableWindow(QWidget):
     def __init__(self, main_app: QApplication):
         super().__init__()
-        # Dodajemy tytuł i przyciski
         self.setWindowTitle("Options")
         self.setGeometry(300, 300, 400, 400)
         self.setWindowFlags(Qt.FramelessWindowHint)
@@ -66,15 +138,11 @@ class DraggableWindow(QWidget):
         self.title_font = load_custom_font(30)
         self.setFont(self.pixel_font)
 
-        # Ustawienie tytułu
         title_label = QLabel("Game of Life")
         title_label.setFont(self.title_font)
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet(
-            "color: white; padding: 10px 0; border: 0px solid transparent;"
-        )
+        title_label.setStyleSheet("color: white; padding: 10px 0;")
 
-        # start
         self.start_button = QPushButton("Start")
         self.start_button.setFont(self.pixel_font)
         self.start_button.setStyleSheet(
@@ -90,7 +158,9 @@ class DraggableWindow(QWidget):
             }
         """
         )
+
         self.start_button.clicked.connect(self.start_game)
+
         # menu
         menu_button = QPushButton("Options")
         menu_button.setFont(self.pixel_font)
@@ -107,8 +177,8 @@ class DraggableWindow(QWidget):
             }
         """
         )
+        menu_button.clicked.connect(self.show_options)
 
-        # close
         close_button = QPushButton("Close")
         close_button.setFont(self.pixel_font)
         close_button.setStyleSheet(
@@ -124,10 +194,7 @@ class DraggableWindow(QWidget):
             }
         """
         )
-
         close_button.clicked.connect(main_app.quit)
-
-        # Przyciski
 
         button_layout = QVBoxLayout()
         button_layout.setAlignment(Qt.AlignCenter)
@@ -138,19 +205,14 @@ class DraggableWindow(QWidget):
         button_layout.addWidget(close_button)
         button_layout.addSpacing(40)
 
-        # Główny layout
         layout = QVBoxLayout()
-        button_layout.addSpacing(20)
         layout.addWidget(title_label)
         layout.addLayout(button_layout)
         self.setLayout(layout)
 
-        # Do przechowywania pozycji myszy
         self.offset = QPoint()
-
-        # Dodanie tła z losowymi pikselami jako child widget
         self.pixel_background = PixelBackground(parent=self)
-        self.pixel_background.lower()  # Umieszcza tło za innymi elementami
+        self.pixel_background.lower()
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -173,3 +235,7 @@ class DraggableWindow(QWidget):
         self.game_window = GameOfLifeWindow(board)
         self.game_window.show()
         self.game_window.start()
+
+    def show_options(self):
+        self.options_window = OptionsWindow()
+        self.options_window.show()
