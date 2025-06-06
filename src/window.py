@@ -1,8 +1,10 @@
 import os
+import random
 
 from PySide6.QtCore import Qt, QPoint
-from PySide6.QtGui import QFont, QFontDatabase
+from PySide6.QtGui import QFont, QFontDatabase, QPainter, QColor
 from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton
+
 from Board import Board
 from Game import GameOfLifeWindow
 
@@ -13,21 +15,58 @@ def load_custom_font():
     font_id = QFontDatabase.addApplicationFont(font_path)
     if font_id == -1:
         print("Failed to load font.")
-        return None
+        return QFont("Arial", size)
     font_family = QFontDatabase.applicationFontFamilies(font_id)[0]
-    return QFont(font_family)
+    return QFont(font_family, size)
+
+
+class PixelBackground(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.pixel_size = 10
+        self.setGeometry(parent.rect())
+        self.pattern = self.generate_random_pattern()
+
+    def generate_random_pattern(self):
+        pattern = []
+        width = self.width() // self.pixel_size
+        height = self.height() // self.pixel_size
+
+        for y in range(height):
+            row = []
+            for x in range(width):
+                row.append(1 if random.random() < 0.05 else 0)
+            pattern.append(row)
+        return pattern
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        for y, row in enumerate(self.pattern):
+            for x, val in enumerate(row):
+                color = QColor("#2196f3") if val == 1 else QColor("#1e1e1e")
+                painter.fillRect(
+                    x * self.pixel_size,
+                    y * self.pixel_size,
+                    self.pixel_size,
+                    self.pixel_size,
+                    color,
+                )
+
 
 
 class DraggableWindow(QWidget):
     def __init__(self, main_app: QApplication):
         super().__init__()
         # Dodajemy tytuł i przyciski
-        self.setWindowTitle("Menu")
+        self.setWindowTitle("Options")
         self.setGeometry(300, 300, 400, 400)
-        self.setWindowFlags(Qt.FramelessWindowHint)  # Bez ramki
+        self.setWindowFlags(Qt.FramelessWindowHint)
         self.setStyleSheet("background-color: #1e1e1e;")
-        self.pixel_font = load_custom_font()
+
+        self.pixel_font = load_custom_font(14)
+        self.title_font = load_custom_font(24)
         self.setFont(self.pixel_font)
+
         # Ustawienie tytułu
         title_label = QLabel("Game of Life")
         title_label.setFont(self.pixel_font)
@@ -66,9 +105,10 @@ class DraggableWindow(QWidget):
             }
         """
         )
+
         # close
         close_button = QPushButton("Close")
-        close_button.setFont(QFont("Comic Sans MS", 14))
+        close_button.setFont(self.pixel_font)
         close_button.setStyleSheet(
             """
             QPushButton {
@@ -85,7 +125,8 @@ class DraggableWindow(QWidget):
 
         close_button.clicked.connect(main_app.quit)
 
-        # przyciski
+        # Przyciski
+
         button_layout = QVBoxLayout()
         button_layout.setAlignment(Qt.AlignCenter)
         button_layout.addWidget(self.start_button)
@@ -95,15 +136,19 @@ class DraggableWindow(QWidget):
         button_layout.addWidget(close_button)
         button_layout.addSpacing(40)
 
-        # Główny
+        # Główny layout
         layout = QVBoxLayout()
+        button_layout.addSpacing(20)
         layout.addWidget(title_label)
         layout.addLayout(button_layout)
-
         self.setLayout(layout)
 
         # Do przechowywania pozycji myszy
         self.offset = QPoint()
+
+        # Dodanie tła z losowymi pikselami jako child widget
+        self.pixel_background = PixelBackground(parent=self)
+        self.pixel_background.lower()  # Umieszcza tło za innymi elementami
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
