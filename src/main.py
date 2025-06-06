@@ -1,8 +1,9 @@
 import sys
-from Board import Board
+
 from PySide6.QtWidgets import QApplication
 
-from window import DraggableWindow
+from Board import Board
+from MenuWindow import DraggableWindow
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
