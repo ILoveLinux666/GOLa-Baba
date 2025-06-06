@@ -10,7 +10,7 @@ from Game import GameOfLifeWindow
 
 
 # TODO do upiększenia
-def load_custom_font():
+def load_custom_font(size=14):
     font_path = os.path.join("assets", "fonts", "pixel.otf")
     font_id = QFontDatabase.addApplicationFont(font_path)
     if font_id == -1:
@@ -73,9 +73,10 @@ class DraggableWindow(QWidget):
         # title_label.setFont(QFont("Comic Sans MS", 20, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setStyleSheet("color: white; padding: 20px 0;")
-        self.start_button = QPushButton("Start")
-        self.start_button.setFont(QFont("Comic Sans MS", 14))
-        self.start_button.setStyleSheet(
+        # start
+        start_button = QPushButton("Start")
+        start_button.setFont(self.pixel_font)
+        start_button.setStyleSheet(
             """
             QPushButton {
                 background-color: #00c853;
@@ -91,7 +92,7 @@ class DraggableWindow(QWidget):
         self.start_button.clicked.connect(self.start_game)
         # menu
         menu_button = QPushButton("Options")
-        menu_button.setFont(QFont("Comic Sans MS", 14))
+        menu_button.setFont(self.pixel_font)
         menu_button.setStyleSheet(
             """
             QPushButton {
