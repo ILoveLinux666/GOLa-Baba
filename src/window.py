@@ -53,7 +53,6 @@ class PixelBackground(QWidget):
                 )
 
 
-
 class DraggableWindow(QWidget):
     def __init__(self, main_app: QApplication):
         super().__init__()
@@ -61,22 +60,24 @@ class DraggableWindow(QWidget):
         self.setWindowTitle("Options")
         self.setGeometry(300, 300, 400, 400)
         self.setWindowFlags(Qt.FramelessWindowHint)
-        self.setStyleSheet("background-color: #1e1e1e;")
+        self.setStyleSheet("background-color: transparent;")
 
         self.pixel_font = load_custom_font(14)
-        self.title_font = load_custom_font(24)
+        self.title_font = load_custom_font(30)
         self.setFont(self.pixel_font)
 
         # Ustawienie tytułu
         title_label = QLabel("Game of Life")
-        title_label.setFont(self.pixel_font)
-        # title_label.setFont(QFont("Comic Sans MS", 20, QFont.Bold))
+        title_label.setFont(self.title_font)
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("color: white; padding: 20px 0;")
+        title_label.setStyleSheet(
+            "color: white; padding: 10px 0; border: 0px solid transparent;"
+        )
+
         # start
-        start_button = QPushButton("Start")
-        start_button.setFont(self.pixel_font)
-        start_button.setStyleSheet(
+        self.start_button = QPushButton("Start")
+        self.start_button.setFont(self.pixel_font)
+        self.start_button.setStyleSheet(
             """
             QPushButton {
                 background-color: #00c853;
