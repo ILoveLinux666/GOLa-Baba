@@ -1,5 +1,6 @@
 player_name.txt
 player_config.txt
+docs
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
