@@ -7,10 +7,7 @@ class Options:
 
     @staticmethod
     def default_config():
-        return {
-            "size": [300, 300],
-            "cell_size": 10
-        }
+        return {"size": [300, 300], "cell_size": 10, "speed": 50}
 
     @staticmethod
     def load():
@@ -20,6 +17,10 @@ class Options:
         else:
             with open("config.json", "r", encoding="utf-8") as f:
                 Options.config = json.load(f)
+                for key, value in Options.default_config().items():
+                    if key not in Options.config:
+                        Options.config[key] = value
+                Options.save()
 
     @staticmethod
     def save():
