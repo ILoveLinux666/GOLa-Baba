@@ -8,3 +8,9 @@ class Cell:
 
     def __repr__(self):
         return f"{self.state.value}"
+
+    def flip_state(self):
+        if self.state == State.ALIVE:
+            self.state = State.DEAD
+        else:
+            self.state = State.ALIVE

@@ -9,17 +9,27 @@ class Board:
 
     def initialize_board(self) -> dict[tuple[int, int], Cell]:
         """Tworzy glider do testów"""
-        self.board[(8, 7)] = Cell(State.ALIVE)
-        self.board[(9, 8)] = Cell(State.ALIVE)
-        self.board[(10, 8)] = Cell(State.ALIVE)
-        self.board[(10, 7)] = Cell(State.ALIVE)
-        self.board[(10, 6)] = Cell(State.ALIVE)
+        # self.board[(8, 7)] = Cell(State.ALIVE)
+        # self.board[(9, 8)] = Cell(State.ALIVE)
+        # self.board[(10, 8)] = Cell(State.ALIVE)
+        # self.board[(10, 7)] = Cell(State.ALIVE)
+        # self.board[(10, 6)] = Cell(State.ALIVE)
 
         return self.board
 
     def get_board(self) -> dict[tuple[int, int], Cell]:
         """Zwraca mapę żywych komórek"""
         return self.board
+
+    def insert_cell(self, x: int, y: int):
+        if self.get_board().get((x, y)) == None:
+            self.get_board()[(x, y)] = Cell(State.ALIVE)
+            print("NEW CELL DRAWN")
+
+    def delete_cell(self, x: int, y: int):
+        if self.get_board().get((x, y)):
+            self.get_board().pop((x, y))
+            print("CELL DELETED")
 
     def check_neighbours(
         self,
