@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QWidget, QSlider, QVBoxLayout
 from PySide6.QtCore import QTimer, Qt, QPoint
 from PySide6.QtGui import QPainter, QColor
+from PySide6.QtWidgets import QWidget, QSlider, QVBoxLayout
 
 # Assume Board and Cell are defined elsewhere and imported
 # Board.get_board() -> dict[(int, int), Cell]
@@ -53,7 +53,7 @@ class GameCanvas(QWidget):
 
 class GameOfLifeWindow(QWidget):
 
-    def __init__(self, board: Board, cell_size: int = 10, update_interval: int = 200):
+    def __init__(self, board: Board, cell_size: int = 10, update_interval: int = 200, size_x: int = 300, size_y: int = 300):
         super().__init__()
         self.board = board
         self.cell_size = cell_size
@@ -79,7 +79,7 @@ class GameOfLifeWindow(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.canvas)
         layout.addWidget(self.speed_slider)
-        self.resize(800, 650)
+        self.resize(size_x, size_y)
 
     def start(self):
         """Start the simulation timer."""

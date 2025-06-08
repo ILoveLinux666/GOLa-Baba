@@ -1,3 +1,4 @@
+import json
 import os
 import random
 
@@ -9,7 +10,6 @@ from PySide6.QtWidgets import (
     QLabel,
     QVBoxLayout,
     QPushButton,
-    QLineEdit,
     QComboBox,
 )
 
@@ -69,17 +69,6 @@ class OptionsWindow(QWidget):
 
         layout = QVBoxLayout()
 
-        label = QLabel("Imię:")
-        label.setFont(font)
-        layout.addWidget(label)
-
-        self.name_input = QLineEdit()
-        self.name_input.setFont(font)
-        self.name_input.setStyleSheet(
-            "background-color: #333; color: white; padding: 5px;"
-        )
-        layout.addWidget(self.name_input)
-
         size_label = QLabel("Wielkość planszy:")
         size_label.setFont(font)
         layout.addWidget(size_label)
@@ -89,7 +78,7 @@ class OptionsWindow(QWidget):
         self.size_combo.setStyleSheet(
             "background-color: #333; color: white; padding: 5px;"
         )
-        self.size_combo.addItems(["300x400", "100x200"])
+        self.size_combo.addItems(["100x200", "300x500", "400x600"])
         layout.addWidget(self.size_combo)
 
         save_button = QPushButton("Zapisz")
@@ -113,16 +102,16 @@ class OptionsWindow(QWidget):
         self.setLayout(layout)
 
     def save_config(self):
-        name = self.name_input.text().strip()
-        size = self.size_combo.currentText().strip()
-        if name:
+        size_text = self.size_combo.currentText().strip()
+        if "x" in size_text:
             try:
-                with open("player_config.txt", "w", encoding="utf-8") as f:
-                    f.write(f"name: {name}\n")
-                    f.write(f"size: {size}\n")
-                print(f"[✓] Zapisano: name={name}, size={size}")
-            except Exception as e:
-                print(f"[✗] Błąd zapisu: {e}")
+                width, height = map(int, size_text.split("x"))
+                config = {"size": [width, height]}
+
+                with open("config.json", "w", encoding="utf-8") as f:
+                    json.dump(config, f, indent=4)
+            except Exception:
+                pass
         self.close()
 
 
@@ -230,11 +219,31 @@ class DraggableWindow(QWidget):
         self.offset = QPoint()
 
     def start_game(self):
+        width, height = 100, 100
+        cell_size = 10
+        try:
+            with open("config.json", "r", encoding="utf-8") as f:
+                config = json.load(f)
+                print("Wczytany config:", config)
+                if "size" in config and len(config["size"]) == 2:
+                    width, height = config["size"]
+                if "cell_size" in config and type(config["cell_size"]) == int:
+                    cell_size = config["cell_size"]
+        except Exception as e:
+            print("Błąd podczas w wczytaniu oplika", e)
+        print(f"jest plansza: {width}x{height}")
         board = Board()
         board.initialize_board()
-        self.game_window = GameOfLifeWindow(board)
+        self.game_window = GameOfLifeWindow(
+            board=board, cell_size=cell_size, size_x=width, size_y=height
+        )
         self.game_window.show()
         self.game_window.start()
+    # board = Board()
+    # board.initialize_board()
+    # self.game_window = GameOfLifeWindow(board)
+    # self.game_window.show()
+    # self.game_window.start()
 
     def show_options(self):
         self.options_window = OptionsWindow()
