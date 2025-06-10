@@ -239,4 +239,3 @@ class DraggableWindow(QWidget):
     def show_options(self):
         self.options_window = OptionsWindow()
         self.options_window.show()
-True
