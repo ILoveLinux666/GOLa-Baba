@@ -1,7 +1,7 @@
-from State import State
+from PySide6.QtCore import QTimer, Qt, QPoint
 from PySide6.QtCore import QTimer, Qt, QPoint
 from PySide6.QtGui import QPainter, QColor
-from PySide6.QtWidgets import QWidget, QSlider, QVBoxLayout
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 
 # Assume Board and Cell are defined elsewhere and imported
 # Board.get_board() -> dict[(int, int), Cell]

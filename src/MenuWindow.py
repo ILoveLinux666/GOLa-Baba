@@ -282,7 +282,7 @@ class DraggableWindow(QWidget):
                     if "speed" in config and isinstance(config["speed"], int):
                         speed = config["speed"]
         except Exception as e:
-            print("Błąd podczas w wczytaniu oplika", e)
+            print("Błąd podczas w wczytaniu pliku", e)
         print(f"jest plansza: {width}x{height}")
         board = Board()
         board.initialize_board()
@@ -291,7 +291,6 @@ class DraggableWindow(QWidget):
         )
         self.game_window.show()
         self.game_window.start_simulation()
-
 
     def show_options(self):
         self.options_window = OptionsWindow()
