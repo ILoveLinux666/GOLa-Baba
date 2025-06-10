@@ -111,13 +111,6 @@ class GameOfLifeWindow(QWidget):
         self.timer.timeout.connect(self._next_generation)
         self.timer.setInterval(update_interval)
 
-        # Speed slider
-        self.speed_slider = QSlider(Qt.Horizontal)
-        self.speed_slider.setRange(25, 1000)  # ms per generation
-        self.speed_slider.setValue(update_interval)
-        self.speed_slider.setToolTip("ms per generation")
-        self.speed_slider.valueChanged.connect(self.timer.setInterval)
-
         # Start button
         self.start_button = QPushButton("Start Simulation")
         self.start_button.clicked.connect(self.start)
@@ -126,10 +119,8 @@ class GameOfLifeWindow(QWidget):
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.canvas)
-        layout.addWidget(self.speed_slider)
         self.resize(size_x, size_y)
         controls = QHBoxLayout()
-        controls.addWidget(self.speed_slider)
         controls.addWidget(self.start_button)
         layout.addLayout(controls)
         
