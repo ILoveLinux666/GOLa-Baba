@@ -6,7 +6,6 @@ class Board:
 
     def __init__(self):
         self.board: dict[tuple[int, int], Cell] = {}
-
     def initialize_board(self) -> dict[tuple[int, int], Cell]:
         """Tworzy glider do testów"""
         # self.board[(8, 7)] = Cell(State.ALIVE)

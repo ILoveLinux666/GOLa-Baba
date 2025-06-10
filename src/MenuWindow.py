@@ -1,3 +1,4 @@
+import json
 import os
 import random
 
@@ -9,8 +10,8 @@ from PySide6.QtWidgets import (
     QLabel,
     QVBoxLayout,
     QPushButton,
-    QLineEdit,
     QComboBox,
+    QSlider,
 )
 
 from Board import Board
@@ -63,24 +64,37 @@ class OptionsWindow(QWidget):
         super().__init__()
         self.setWindowTitle("Opcje")
         self.setGeometry(400, 400, 300, 220)
+        # self.setWindowFlags(Qt.FramelessWindowHint)
         self.setStyleSheet("background-color: #121212; color: white;")
 
         font = load_custom_font(14)
 
         layout = QVBoxLayout()
+        speed_label = QLabel("Speed:")
+        speed_label.setFont(font)
+        layout.addWidget(speed_label)
 
-        label = QLabel("Imię:")
-        label.setFont(font)
-        layout.addWidget(label)
-
-        self.name_input = QLineEdit()
-        self.name_input.setFont(font)
-        self.name_input.setStyleSheet(
-            "background-color: #333; color: white; padding: 5px;"
+        self.speed_slider = QSlider(Qt.Horizontal)
+        self.speed_slider.setRange(25, 1000)
+        self.speed_slider.setValue(50)
+        self.speed_slider.setStyleSheet(
+            """
+            QSlider::groove:horizontal {
+                height: 6px;
+                background: #333;
+            }
+            QSlider::handle:horizontal {
+                background: #2196f3;
+                border: 1px solid #1e88e5;
+                width: 14px;
+                margin: -5px 0;
+                border-radius: 7px;
+            }
+            """
         )
-        layout.addWidget(self.name_input)
+        layout.addWidget(self.speed_slider)
 
-        size_label = QLabel("Wielkość planszy:")
+        size_label = QLabel("Plansza:")
         size_label.setFont(font)
         layout.addWidget(size_label)
 
@@ -89,8 +103,20 @@ class OptionsWindow(QWidget):
         self.size_combo.setStyleSheet(
             "background-color: #333; color: white; padding: 5px;"
         )
-        self.size_combo.addItems(["300x400", "100x200"])
+        self.size_combo.addItems(["100x200", "300x500", "400x600"])
         layout.addWidget(self.size_combo)
+
+        pixel_label = QLabel("Pixel: ")
+        pixel_label.setFont(font)
+        layout.addWidget(pixel_label)
+
+        self.pixel_combo = QComboBox()
+        self.pixel_combo.setFont(font)
+        self.pixel_combo.setStyleSheet(
+            "background-color: #333; color: white; padding: 5px;"
+        )
+        self.pixel_combo.addItems(["10", "20", "30"])
+        layout.addWidget(self.pixel_combo)
 
         save_button = QPushButton("Zapisz")
         save_button.setFont(font)
@@ -113,16 +139,28 @@ class OptionsWindow(QWidget):
         self.setLayout(layout)
 
     def save_config(self):
-        name = self.name_input.text().strip()
-        size = self.size_combo.currentText().strip()
-        if name:
-            try:
-                with open("player_config.txt", "w", encoding="utf-8") as f:
-                    f.write(f"name: {name}\n")
-                    f.write(f"size: {size}\n")
-                print(f"[✓] Zapisano: name={name}, size={size}")
-            except Exception as e:
-                print(f"[✗] Błąd zapisu: {e}")
+        size_text = self.size_combo.currentText().strip()
+        pixel_text = self.pixel_combo.currentText().strip()
+        speed_value = self.speed_slider.value()
+        try:
+            if "x" in size_text:
+                width, height = map(int, size_text.split("x"))
+            else:
+                width, height = 100, 100
+
+            cell_size = int(pixel_text)
+            config = {
+                "size": [width, height],
+                "cell_size": cell_size,
+                "speed": speed_value,
+            }
+
+            with open("config.json", "w", encoding="utf-8") as f:
+                json.dump(config, f, indent=4)
+
+        except Exception as e:
+            print("Błąd podczas zapisu konfiguracji:", e)
+
         self.close()
 
 
@@ -230,11 +268,30 @@ class DraggableWindow(QWidget):
         self.offset = QPoint()
 
     def start_game(self):
+        width, height = 100, 100
+        cell_size = 10
+        speed = 50
+        try:
+            with open("config.json", "r", encoding="utf-8") as f:
+                config = json.load(f)
+                print("Wczytany config:", config)
+                if "size" in config and len(config["size"]) == 2:
+                    width, height = config["size"]
+                if "cell_size" in config and type(config["cell_size"]) == int:
+                    cell_size = config["cell_size"]
+                    if "speed" in config and isinstance(config["speed"], int):
+                        speed = config["speed"]
+        except Exception as e:
+            print("Błąd podczas w wczytaniu oplika", e)
+        print(f"jest plansza: {width}x{height}")
         board = Board()
         board.initialize_board()
-        self.game_window = GameOfLifeWindow(board)
+        self.game_window = GameOfLifeWindow(
+            board=board, cell_size=cell_size, size_x=width, size_y=height
+        )
         self.game_window.show()
         self.game_window.start_simulation()
+
 
     def show_options(self):
         self.options_window = OptionsWindow()
