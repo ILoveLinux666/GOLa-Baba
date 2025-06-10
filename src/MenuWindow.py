@@ -234,7 +234,7 @@ class DraggableWindow(QWidget):
         board.initialize_board()
         self.game_window = GameOfLifeWindow(board)
         self.game_window.show()
-        self.game_window.start()
+        self.game_window.start_simulation()
 
     def show_options(self):
         self.options_window = OptionsWindow()
